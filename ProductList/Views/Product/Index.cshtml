@@ -133,7 +133,8 @@
         // ----------------------------------------------------------------------
 
         $(function DropDownPopulater() {
-        $("#productNameTextbox").prop("disabled", true);
+        $("#productNameTextbox, #prouductDropdown,#categoryDropdown,#serialNumberTextbox,#addProductButton").prop("disabled", true);
+            $("#supplierDropdown").prop("disabled", false);
 
         $("#supplierDropdown").change(function () {
             var supplierId = $(this).val();
@@ -154,12 +155,7 @@
                         });
                         categoryDropdown.prop("disabled", false);
                     });
-            } else {
-                $("#categoryDropdown").empty().append($("<option></option>").val("").text("Select a category")).prop("disabled", true);
-                $("#productDropdown").empty().append($("<option></option>").val("").text("Select a product")).prop("disabled", true);
-                $("#productNameTextbox").prop("disabled", true);
-                $("#serialNumberTextbox").prop("disabled", true);
-            }
+            } 
         });      
 
         $("#categoryDropdown").change(function () {
@@ -182,11 +178,8 @@
                         });
                         productDropdown.prop("disabled", false);
                     });
-            } else {
-                $("#productDropdown").empty().append($("<option></option>").val("").text("Select a product")).prop("disabled", true);
-                $("#productNameTextbox").prop("disabled", true);
-                $("#serialNumberTextbox").prop("disabled", true);
             }
+            
         });
 
         $("#productDropdown").change(function () {
@@ -194,10 +187,8 @@
             if ($("#categoryDropdown").val() && $("#productDropdown").val()) {
                 $("#productNameTextbox").prop("disabled", false);
                 $("#serialNumberTextbox").prop("disabled", false);
-            } else {
-                $("#productNameTextbox").prop("disabled", true);
-                $("#serialNumberTextbox").prop("disabled", true);
-            }
+                $("#addProductButton").prop("disabled", false);
+            } 
         });
 
         // ----------------------------------------------------------------------
@@ -207,8 +198,9 @@
             $("#addProductButton").click(function () {
                 var productId = $("#productDropdown").val();
                 var productName = $("#productNameTextbox").val();
-                if (productId && productName) {
-                    $.get('@Url.Action("AddProduct", "Product")', { productId: productId, productName: productName })
+                var serialNumber = $("#serialNumberTextbox").val();
+                if (productId && productName && serialNumber) {
+                    $.get('@Url.Action("AddProduct", "Product")', { productId: productId, productName: productName, serialNumber:serialNumber })
                         .done(function (data) {
                         if (data === "OK") {
                             var productTable = $("#productTable tbody");
@@ -221,17 +213,25 @@
 
                             newRow.append($("<td></td>").append(
                                 $("<select></select>").addClass("form-select").prop("disabled", true)
-                                    .append($("<option></option>").val($("#categoryDropdown").val()).text($("#categoryDropdown option:selected").text()))));
+                                    .append($("<option></option>").val(productId).text($("#productDropdown option:selected").text()))));
 
                             newRow.append($("<td></td>").append(
                                 $("<select></select>").addClass("form-select").prop("disabled", true)
-                                    .append($("<option></option>").val(productId).text($("#productDropdown option:selected").text()))));
+                                    .append($("<option></option>").val($("supplierDropdown").val()).text($("supplierDropdown option:selected").text()))));
+                            
+
+                            newRow.append($("<td></td>").append(
+                                $("<select></select>").addClass("form-select").prop("disabled", true)
+                                    .append($("<option></option>").val($("#categoryDropdown").val()).text($("#categoryDropdown option:selected").text()))));
+
+                           
 
                         // ----------------------------------------------------------------------
 
                         // ----------------------------------------------------------------------
 
                             newRow.append($("<td></td>").append($("<input>").prop("type", "text").addClass("form-control").prop("disabled", true).val(productName)));
+                            newRow.append($("<td></td").append($("<input>").prop("type", "text").addClass("form-control").prop("disabled", true).val(serialNumber)));
                             newRow.append($("<td></td>").text(new Date().toLocaleString()));
                             newRow.append($("<td></td>").append(
                                 $("<button></button>").text("EDIT").addClass("btn btn-success btn-sm").click(function () {
@@ -243,19 +243,21 @@
 
                             productTable.append(newRow);
 
-                            $("#productNameTextbox").val("");
+                            $("#productNameTextbox", "serialNumberTextbox").val("");
 
-                            $("#productNameTextbox").prop("disabled", true);
+                            $("#productNameTextbox","serialNumberTextbox").prop("disabled", true);
 
                             $("#productDropdown").prop("disabled", true);
 
-                            $("#categoryDropdown").val("");
+                            $("#categoryDropdown").val("").prop("disabled",true);
 
                             $("#productDropdown").empty().append($("<option></option>").val("").text("Select a product")).prop("disabled", true);
 
                             $("#productNameTextbox").prop("disabled", true);
 
-                            $("#categoryDropdown").focus();
+                            $("#supplierDropdown").val("");
+
+                            $("#supplierDropdown").focus();
 
                             // ----------------------------------------------------------------------
                             // RAW DATA DEMO CODE ---- Not part of the project!!!! ----
