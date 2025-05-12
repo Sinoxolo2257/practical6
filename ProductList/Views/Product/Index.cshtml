@@ -137,26 +137,33 @@
             $("#supplierDropdown").prop("disabled", false);
 
         $("#supplierDropdown").change(function () {
-            var supplierId = $(this).val();
-            if (supplierId) {
-                $.get('@Url.Action("GetCategoriesBySupplier", "Product")', { supplierId: supplierId })
-                    .done(function (data) {
-                        var categoryNames = data.split(";")[0].split(",");
-                        var categoryIds = data.split(";")[1].split(",");
-                        var categories = [];
-                        for (var i = 0; i < categoryNames.length; i++) {
-                            categories.push({ id: categoryIds[i], name: categoryNames[i] });
-                        }
-                        var categoryDropdown = $("#categoryDropdown");
-                        categoryDropdown.empty();
-                        categoryDropdown.append($("<option></option>").val("").text("Select a category"));
-                        $.each(categories, function (i, category) {
-                            categoryDropdown.append($("<option></option>").val(categoryIds[i]).text(category));
-                        });
-                        categoryDropdown.prop("disabled", false);
-                    });
-            } 
-        });      
+             var supplierId = $(this).val();
+             if (supplierId) {
+               $.get('@Url.Action("GetCategoriesBySupplier", "Product")', { supplierId: supplierId })
+                .done(function (data) {
+                    var categoryNames = data.split(";")[0].split(",");
+                    var categoryIds = data.split(";")[1].split(",");
+                    var categoryDropdown = $("#categoryDropdown");
+
+                    categoryDropdown.empty();
+                    categoryDropdown.append($("<option></option>").val("").text("Select a category"));
+
+                
+                    for (var i = 0; i < categoryNames.length; i++)
+                    {
+                        categoryDropdown.append(
+                        $("<option></option>").val(categoryIds[i]).text(categoryNames[i]));
+                    }
+
+                    categoryDropdown.prop("disabled", false);
+            });
+             } else {
+                        $("#categoryDropdown").empty().append($("<option></option>").val("").text("Select a category")).prop("disabled", true);
+                        $("#productDropdown").empty().append($("<option></option>").val("").text("Select a product")).prop("disabled", true);
+                        $("#productNameTextbox, #serialNumberTextbox").val("").prop("disabled", true);
+                 }
+});
+
 
         $("#categoryDropdown").change(function () {
             var categoryId = $(this).val();
@@ -179,7 +186,7 @@
                         productDropdown.prop("disabled", false);
                     });
             }
-            
+
         });
 
         $("#productDropdown").change(function () {
@@ -188,7 +195,7 @@
                 $("#productNameTextbox").prop("disabled", false);
                 $("#serialNumberTextbox").prop("disabled", false);
                 $("#addProductButton").prop("disabled", false);
-            } 
+            }
         });
 
         // ----------------------------------------------------------------------
@@ -218,13 +225,13 @@
                             newRow.append($("<td></td>").append(
                                 $("<select></select>").addClass("form-select").prop("disabled", true)
                                     .append($("<option></option>").val($("supplierDropdown").val()).text($("supplierDropdown option:selected").text()))));
-                            
+
 
                             newRow.append($("<td></td>").append(
                                 $("<select></select>").addClass("form-select").prop("disabled", true)
                                     .append($("<option></option>").val($("#categoryDropdown").val()).text($("#categoryDropdown option:selected").text()))));
 
-                           
+
 
                         // ----------------------------------------------------------------------
 
@@ -282,9 +289,11 @@
 
                 // HTML Load controls disabled.
                 // -------------------------------------------
+                $("#supplierDropdown").prop("disabled", true);
                 $("#categoryDropdown").prop("disabled", true);
                 $("#productDropdown").prop("disabled", true);
                 $("#productNameTextbox").prop("disabled", true);
+                $("#serialNumberTextbox").prop("disabled", true);
 
                 $(".btn-success").prop("disabled", true);
 
@@ -294,7 +303,7 @@
                 currentRow.find(".btn-danger").prop("disabled", true);
 
                 // Disable dropdowns in the row
-                currentRow.find(".form-select").prop("disabled", true); 
+                currentRow.find(".form-select").prop("disabled", true);
 
                 currentRow.find(":input[type=text]").prop("disabled", false);
                 currentRow.find(":input[type=text]").each(function () {
@@ -325,7 +334,7 @@
                     // HTML Load controls disabled.
                     // -------------------------------------------
                     $(".btn-danger").prop("disabled", false);
-                    $("#categoryDropdown").prop("disabled", false)
+                    $("#supplierDropdown").prop("disabled", false)
 
                     $("form :input:not(.row-edit :input)").not(":disabled").removeClass("disabled").prop("disabled", false);
 
